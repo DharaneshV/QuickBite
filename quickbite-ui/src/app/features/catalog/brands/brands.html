@@ -1,0 +1,118 @@
+<section class="catalog-page">
+  <header class="page-header">
+    <div>
+      <h1>Brands</h1>
+      <p class="subtitle">Manage product brands and manufacturers in QuickBite.</p>
+    </div>
+    <div class="search-box">
+      <input
+        type="search"
+        placeholder="Search brands..."
+        [value]="searchTerm()"
+        (input)="onSearch($event)"
+        aria-label="Search brands"
+      />
+    </div>
+  </header>
+
+  @if (errorMessage()) {
+    <div class="alert alert-error" role="alert">{{ errorMessage() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert alert-success" role="status">{{ successMessage() }}</div>
+  }
+
+  <div class="catalog-grid">
+    <div class="card form-card">
+      <h2>{{ editingBrandId() !== null ? 'Edit Brand' : 'Add Brand' }}</h2>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-field">
+          <label for="brand-name">Name <span class="required">*</span></label>
+          <input
+            id="brand-name"
+            type="text"
+            formControlName="name"
+            placeholder="e.g. FreshCo"
+          />
+          @if (form.controls.name.touched && form.controls.name.errors?.['required']) {
+            <span class="field-error">Brand name is required.</span>
+          }
+          @if (form.controls.name.touched && form.controls.name.errors?.['maxlength']) {
+            <span class="field-error">Name cannot exceed 100 characters.</span>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+            {{
+              isSubmitting()
+                ? 'Saving...'
+                : editingBrandId() !== null
+                  ? 'Update Brand'
+                  : 'Create Brand'
+            }}
+          </button>
+
+          @if (editingBrandId() !== null) {
+            <button type="button" class="btn btn-secondary" (click)="cancelEdit()">
+              Cancel
+            </button>
+          }
+        </div>
+      </form>
+    </div>
+
+    <div class="card list-card">
+      <div class="list-header">
+        <h2>All Brands ({{ filteredBrands().length }})</h2>
+      </div>
+
+      @if (isLoading()) {
+        <p class="empty-state">Loading brands...</p>
+      } @else if (filteredBrands().length === 0) {
+        <p class="empty-state">No brands found.</p>
+      } @else {
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Products</th>
+                <th class="actions-col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (brand of filteredBrands(); track brand.brandId) {
+                <tr>
+                  <td class="name-cell">{{ brand.name }}</td>
+                  <td>
+                    <span class="badge">{{ brand.productCount }}</span>
+                  </td>
+                  <td class="actions-col">
+                    <button
+                      type="button"
+                      class="btn-link"
+                      (click)="startEdit(brand)"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-link danger"
+                      (click)="deleteBrand(brand)"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
