@@ -4,7 +4,11 @@
   <nav class="nav-links">
     <a routerLink="/products" routerLinkActive="active">Products</a>
     <a routerLink="/cart" routerLinkActive="active">Cart ({{ cartService.itemCount() }})</a>
+    @if (authService.isAuthenticated()) {
+      <a routerLink="/orders/my" routerLinkActive="active">My Orders</a>
+    }
     @if (authService.isAdmin()) {
+      <a routerLink="/admin" routerLinkActive="active">Admin</a>
       <a routerLink="/products/manage" routerLinkActive="active">Manage Products</a>
       <a routerLink="/categories" routerLinkActive="active">Categories</a>
       <a routerLink="/brands" routerLinkActive="active">Brands</a>

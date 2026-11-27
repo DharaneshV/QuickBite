@@ -7,6 +7,7 @@ using QuickBite.Api.Helpers;
 using QuickBite.Api.Services.Auth;
 using QuickBite.Api.Services.Catalog;
 using QuickBite.Api.Services.Checkout;
+using QuickBite.Api.Services.OrderManagement;
 using QuickBite.Api.Services.Products;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +26,7 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<BrandService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CheckoutService>();
+builder.Services.AddScoped<OrderManagementService>();
 
 builder.Services.AddCors(options =>
 {

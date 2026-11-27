@@ -184,10 +184,49 @@
 .btn-details {
   padding: 0.4rem 0.75rem;
   border-radius: 8px;
-  background: #ea580c;
-  color: #ffffff;
+  background: #f3f4f6;
+  color: #111827;
   text-decoration: none;
   font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.btn-add-cart {
+  padding: 0.4rem 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background: #ea580c;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-add-cart:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cart-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.cart-banner a {
+  color: #ea580c;
   font-weight: 600;
 }
 

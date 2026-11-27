@@ -36,6 +36,12 @@
   @if (errorMessage()) {
     <div class="alert-error" role="alert">{{ errorMessage() }}</div>
   }
+  @if (cartMessage()) {
+    <div class="cart-banner" role="status">
+      <span>{{ cartMessage() }}</span>
+      <a routerLink="/cart">View Cart</a>
+    </div>
+  }
 
   @if (isLoading()) {
     <p class="status-text">Loading products...</p>
@@ -81,9 +87,19 @@
 
             <div class="card-footer">
               <span class="price">{{ product.price | currency }}</span>
-              <a class="btn-details" [routerLink]="['/products', product.productId]">
-                View Details
-              </a>
+              <div class="footer-actions">
+                <button
+                  type="button"
+                  class="btn-add-cart"
+                  [disabled]="!product.isAvailable || product.stockQuantity === 0"
+                  (click)="addToCart(product)"
+                >
+                  Add
+                </button>
+                <a class="btn-details" [routerLink]="['/products', product.productId]">
+                  Details
+                </a>
+              </div>
             </div>
           </div>
         </article>

@@ -4,6 +4,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Category } from '../../catalog/catalog.models';
 import { CatalogService } from '../../catalog/catalog.service';
+import { CartService } from '../../cart/cart.service';
 import { Product } from '../products.models';
 import { ProductsService } from '../products.service';
 
@@ -17,6 +18,7 @@ import { ProductsService } from '../products.service';
 export class ProductListComponent implements OnInit {
   private readonly productsService = inject(ProductsService);
   private readonly catalogService = inject(CatalogService);
+  private readonly cartService = inject(CartService);
 
   readonly products = signal<Product[]>([]);
   readonly categories = signal<Category[]>([]);
@@ -24,6 +26,7 @@ export class ProductListComponent implements OnInit {
   readonly selectedCategoryId = signal<number | null>(null);
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
+  readonly cartMessage = signal<string | null>(null);
 
   ngOnInit(): void {
     this.loadCategories();
@@ -82,5 +85,12 @@ export class ProductListComponent implements OnInit {
     this.searchTerm.set('');
     this.selectedCategoryId.set(null);
     this.loadProducts();
+  }
+
+  addToCart(product: Product): void {
+    const res = this.cartService.addItem(product, 1);
+    this.cartMessage.set(
+      res.added ? `Added "${product.name}" to cart.` : (res.message ?? null)
+    );
   }
 }

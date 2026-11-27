@@ -46,6 +46,22 @@
         <p class="description">
           {{ item.description || 'No description provided for this product.' }}
         </p>
+
+        <div class="cart-actions">
+          <button
+            type="button"
+            class="btn-add-cart"
+            [disabled]="!item.isAvailable || item.stockQuantity === 0"
+            (click)="addToCart(item)"
+          >
+            {{ !item.isAvailable || item.stockQuantity === 0 ? 'Unavailable' : 'Add to Cart' }}
+          </button>
+          <a routerLink="/cart" class="btn-view-cart">View Cart</a>
+        </div>
+
+        @if (cartMessage()) {
+          <p class="cart-feedback">{{ cartMessage() }}</p>
+        }
       </div>
     </div>
   }
