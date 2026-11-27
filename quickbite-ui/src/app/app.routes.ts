@@ -1,5 +1,9 @@
 import { Routes } from '@angular/router';
 
-// The integration lead composes the feature route arrays here after
-// the vertical developers provide their feature route files.
-export const routes: Routes = [];
+import { authRoutes } from './features/auth/auth.routes';
+import { catalogRoutes } from './features/catalog/catalog.routes';
+
+export const routes: Routes = [
+  ...authRoutes,
+  ...catalogRoutes,
+];
