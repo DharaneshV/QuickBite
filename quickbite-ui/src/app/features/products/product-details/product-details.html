@@ -1,0 +1,53 @@
+<section class="details-page">
+  <a routerLink="/products" class="back-link">← Back to Products</a>
+
+  @if (isLoading()) {
+    <p class="status-text">Loading product details...</p>
+  } @else if (errorMessage()) {
+    <div class="alert-error" role="alert">{{ errorMessage() }}</div>
+  } @else if (product(); as item) {
+    <div class="details-card">
+      <div class="media-box">
+        @if (item.imageUrl) {
+          <img [src]="item.imageUrl" [alt]="item.name" />
+        } @else {
+          <div class="image-placeholder">No Image Available</div>
+        }
+      </div>
+
+      <div class="info-box">
+        <div class="meta-badges">
+          <span class="badge-category">{{ item.categoryName }}</span>
+          <span class="badge-brand">{{ item.brandName }}</span>
+        </div>
+
+        <h1>{{ item.name }}</h1>
+
+        <p class="price">{{ item.price | currency }}</p>
+
+        <div class="availability-row">
+          <span
+            class="stock-badge"
+            [class.unavailable]="!item.isAvailable || item.stockQuantity === 0"
+          >
+            {{
+              !item.isAvailable
+                ? 'Currently Unavailable'
+                : item.stockQuantity === 0
+                  ? 'Out of Stock'
+                  : 'In Stock (' + item.stockQuantity + ' available)'
+            }}
+          </span>
+          @if (item.packaging) {
+            <span class="packaging">Packaging: {{ item.packaging }}</span>
+          }
+        </div>
+
+        <p class="description">
+          {{ item.description || 'No description provided for this product.' }}
+        </p>
+      </div>
+    </div>
+  }
+</section>
+

@@ -1,0 +1,94 @@
+<section class="products-page">
+  <header class="page-header">
+    <div>
+      <h1>Products</h1>
+      <p class="subtitle">Browse fresh food and grocery items available on QuickBite.</p>
+    </div>
+
+    <div class="filters">
+      <input
+        type="search"
+        placeholder="Search products..."
+        [value]="searchTerm()"
+        (input)="onSearchInput($event)"
+        aria-label="Search products"
+      />
+
+      <select
+        [value]="selectedCategoryId() ?? ''"
+        (change)="onCategoryChange($event)"
+        aria-label="Filter by category"
+      >
+        <option value="">All Categories</option>
+        @for (category of categories(); track category.categoryId) {
+          <option [value]="category.categoryId">{{ category.name }}</option>
+        }
+      </select>
+
+      @if (searchTerm() || selectedCategoryId() !== null) {
+        <button type="button" class="btn-clear" (click)="clearFilters()">
+          Reset
+        </button>
+      }
+    </div>
+  </header>
+
+  @if (errorMessage()) {
+    <div class="alert-error" role="alert">{{ errorMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <p class="status-text">Loading products...</p>
+  } @else if (products().length === 0) {
+    <p class="status-text">No products match your search criteria.</p>
+  } @else {
+    <div class="product-grid">
+      @for (product of products(); track product.productId) {
+        <article class="product-card">
+          <div class="product-media">
+            @if (product.imageUrl) {
+              <img [src]="product.imageUrl" [alt]="product.name" />
+            } @else {
+              <div class="image-placeholder">No Image</div>
+            }
+            <span
+              class="stock-pill"
+              [class.unavailable]="!product.isAvailable || product.stockQuantity === 0"
+            >
+              {{
+                !product.isAvailable
+                  ? 'Unavailable'
+                  : product.stockQuantity === 0
+                    ? 'Out of stock'
+                    : product.stockQuantity + ' in stock'
+              }}
+            </span>
+          </div>
+
+          <div class="product-body">
+            <div class="meta-row">
+              <span class="tag">{{ product.categoryName }}</span>
+              <span class="brand">{{ product.brandName }}</span>
+            </div>
+
+            <h2>
+              <a [routerLink]="['/products', product.productId]">{{ product.name }}</a>
+            </h2>
+
+            @if (product.packaging) {
+              <p class="packaging">{{ product.packaging }}</p>
+            }
+
+            <div class="card-footer">
+              <span class="price">{{ product.price | currency }}</span>
+              <a class="btn-details" [routerLink]="['/products', product.productId]">
+                View Details
+              </a>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
+
