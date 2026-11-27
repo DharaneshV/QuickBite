@@ -1,0 +1,57 @@
+<section class="order-details-page">
+  <a routerLink="/orders/my" class="back-link">← Back to My Orders</a>
+
+  @if (isLoading()) {
+    <p class="status-text">Loading order details...</p>
+  } @else if (errorMessage()) {
+    <div class="alert-error" role="alert">{{ errorMessage() }}</div>
+  } @else if (order(); as item) {
+    <div class="details-card">
+      <header class="details-header">
+        <div>
+          <h1>Order #{{ item.orderId }}</h1>
+          <p class="order-date">Placed on {{ item.orderDate | date: 'medium' }}</p>
+          @if (item.customerName) {
+            <p class="customer-info">{{ item.customerName }} ({{ item.customerEmail }})</p>
+          }
+        </div>
+        <span class="status-badge" [class]="'status-badge ' + statusClass(item.status)">
+          {{ item.status }}
+        </span>
+      </header>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Unit Price</th>
+              <th>Qty</th>
+              <th class="right">Line Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (line of item.items; track line.orderItemId) {
+              <tr>
+                <td>
+                  <a [routerLink]="['/products', line.productId]" class="product-link">
+                    {{ line.productName }}
+                  </a>
+                </td>
+                <td>{{ line.unitPrice | currency }}</td>
+                <td>{{ line.quantity }}</td>
+                <td class="right">{{ line.lineTotal | currency }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <footer class="details-footer">
+        <span>Total Amount</span>
+        <strong>{{ item.totalAmount | currency }}</strong>
+      </footer>
+    </div>
+  }
+</section>
+

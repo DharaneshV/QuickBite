@@ -1,0 +1,50 @@
+<section class="orders-page">
+  <header class="page-header">
+    <div>
+      <h1>My Orders</h1>
+      <p class="subtitle">Track your recent QuickBite orders and delivery status.</p>
+    </div>
+    <a routerLink="/products" class="btn-outline">Continue Shopping</a>
+  </header>
+
+  @if (errorMessage()) {
+    <div class="alert-error" role="alert">{{ errorMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <p class="status-text">Loading your orders...</p>
+  } @else if (orders().length === 0) {
+    <div class="empty-card">
+      <p>You have not placed any orders yet.</p>
+      <a routerLink="/products" class="btn-primary">Browse Products</a>
+    </div>
+  } @else {
+    <div class="orders-list">
+      @for (order of orders(); track order.orderId) {
+        <article class="order-card">
+          <div class="order-top">
+            <div>
+              <h2>Order #{{ order.orderId }}</h2>
+              <p class="order-date">{{ order.orderDate | date: 'medium' }}</p>
+            </div>
+            <span class="status-badge" [class]="'status-badge ' + statusClass(order.status)">
+              {{ order.status }}
+            </span>
+          </div>
+
+          <div class="order-meta">
+            <span>{{ order.items.length }} item(s)</span>
+            <span class="order-total">{{ order.totalAmount | currency }}</span>
+          </div>
+
+          <div class="order-actions">
+            <a [routerLink]="['/orders', order.orderId]" class="btn-details">
+              View Details
+            </a>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
+
