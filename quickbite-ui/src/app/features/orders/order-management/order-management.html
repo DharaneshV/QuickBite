@@ -1,0 +1,99 @@
+<section class="management-page">
+  <header class="page-header">
+    <div>
+      <h1>Order Management</h1>
+      <p class="subtitle">Review customer orders and update fulfillment status.</p>
+    </div>
+
+    <div class="filters">
+      <input
+        type="search"
+        placeholder="Search by ID or customer..."
+        [value]="searchTerm()"
+        (input)="onSearch($event)"
+        aria-label="Search orders"
+      />
+      <select
+        [value]="selectedStatusFilter()"
+        (change)="onStatusFilterChange($event)"
+        aria-label="Filter by status"
+      >
+        <option value="">All Statuses</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ status }}</option>
+        }
+      </select>
+    </div>
+  </header>
+
+  @if (errorMessage()) {
+    <div class="alert alert-error" role="alert">{{ errorMessage() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert alert-success" role="status">{{ successMessage() }}</div>
+  }
+
+  <div class="card">
+    @if (isLoading()) {
+      <p class="empty-state">Loading orders...</p>
+    } @else if (filteredOrders().length === 0) {
+      <p class="empty-state">No orders found.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Customer</th>
+              <th>Date</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Update Status</th>
+              <th class="right">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (order of filteredOrders(); track order.orderId) {
+              <tr>
+                <td class="bold">#{{ order.orderId }}</td>
+                <td>
+                  <div class="bold">{{ order.customerName }}</div>
+                  <div class="sub">{{ order.customerEmail }}</div>
+                </td>
+                <td>{{ order.orderDate | date: 'short' }}</td>
+                <td>{{ order.items.length }}</td>
+                <td class="bold">{{ order.totalAmount | currency }}</td>
+                <td>
+                  <span class="status-badge" [class]="'status-badge ' + statusClass(order.status)">
+                    {{ order.status }}
+                  </span>
+                </td>
+                <td>
+                  <select
+                    class="status-select"
+                    [value]="order.status"
+                    [disabled]="updatingOrderId() === order.orderId"
+                    (change)="onStatusChange(order, $event)"
+                    [attr.aria-label]="'Update status for order ' + order.orderId"
+                  >
+                    @for (status of statuses; track status) {
+                      <option [value]="status">{{ status }}</option>
+                    }
+                  </select>
+                </td>
+                <td class="right">
+                  <a [routerLink]="['/orders', order.orderId]" class="btn-link">
+                    View
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</section>
+
