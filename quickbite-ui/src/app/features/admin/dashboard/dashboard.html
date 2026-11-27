@@ -1,0 +1,122 @@
+<section class="dashboard-page">
+  <header class="page-header">
+    <div>
+      <h1>Admin Dashboard</h1>
+      <p class="subtitle">Live overview of QuickBite inventory, categories, and orders.</p>
+    </div>
+    <button type="button" class="btn-refresh" (click)="loadDashboard()" [disabled]="isLoading()">
+      {{ isLoading() ? 'Refreshing...' : 'Refresh' }}
+    </button>
+  </header>
+
+  @if (errorMessage()) {
+    <div class="alert-error" role="alert">{{ errorMessage() }}</div>
+  }
+
+  <div class="stats-grid">
+    <a routerLink="/admin/products" class="stat-card">
+      <span class="stat-label">Total Products</span>
+      <strong class="stat-value">{{ totalProducts() }}</strong>
+    </a>
+
+    <a routerLink="/admin/orders" class="stat-card">
+      <span class="stat-label">Total Orders</span>
+      <strong class="stat-value">{{ totalOrders() }}</strong>
+    </a>
+
+    <a routerLink="/admin/orders" class="stat-card highlight">
+      <span class="stat-label">Pending Orders</span>
+      <strong class="stat-value">{{ pendingOrdersCount() }}</strong>
+    </a>
+
+    <a routerLink="/admin/categories" class="stat-card">
+      <span class="stat-label">Categories</span>
+      <strong class="stat-value">{{ totalCategories() }}</strong>
+    </a>
+  </div>
+
+  <div class="panels-grid">
+    <div class="panel-card">
+      <div class="panel-header">
+        <h2>Low-Stock Products ({{ lowStockProducts().length }})</h2>
+        <a routerLink="/admin/products" class="panel-link">Manage Inventory</a>
+      </div>
+
+      @if (isLoading()) {
+        <p class="empty-state">Loading inventory...</p>
+      } @else if (lowStockProducts().length === 0) {
+        <p class="empty-state">All products are sufficiently stocked.</p>
+      } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Category</th>
+              <th class="right">Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of lowStockProducts(); track product.productId) {
+              <tr>
+                <td>
+                  <div class="bold">{{ product.name }}</div>
+                  <div class="sub">{{ product.brandName }}</div>
+                </td>
+                <td>{{ product.categoryName }}</td>
+                <td class="right">
+                  <span class="stock-pill" [class.zero]="product.stockQuantity === 0">
+                    {{ product.stockQuantity }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+    <div class="panel-card">
+      <div class="panel-header">
+        <h2>Recent Orders</h2>
+        <a routerLink="/admin/orders" class="panel-link">View All Orders</a>
+      </div>
+
+      @if (isLoading()) {
+        <p class="empty-state">Loading orders...</p>
+      } @else if (recentOrders().length === 0) {
+        <p class="empty-state">No orders placed yet.</p>
+      } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Customer</th>
+              <th>Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (order of recentOrders(); track order.orderId) {
+              <tr>
+                <td>
+                  <a [routerLink]="['/orders', order.orderId]" class="order-link">
+                    #{{ order.orderId }}
+                  </a>
+                  <div class="sub">{{ order.orderDate | date: 'short' }}</div>
+                </td>
+                <td>{{ order.customerName }}</td>
+                <td class="bold">{{ order.totalAmount | currency }}</td>
+                <td>
+                  <span class="status-badge" [class]="'status-badge ' + statusClass(order.status)">
+                    {{ order.status }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+</section>
+
