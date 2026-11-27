@@ -26,6 +26,7 @@ export class ProductManagementComponent implements OnInit {
   readonly filterCategoryId = signal<number | null>(null);
   readonly isLoading = signal(false);
   readonly isSubmitting = signal(false);
+  readonly isModalOpen = signal(false);
   readonly editingProductId = signal<number | null>(null);
   readonly errorMessage = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
@@ -96,6 +97,13 @@ export class ProductManagementComponent implements OnInit {
     this.filterCategoryId.set(raw ? Number(raw) : null);
   }
 
+  openCreateModal(): void {
+    this.cancelEdit();
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+    this.isModalOpen.set(true);
+  }
+
   startEdit(product: Product): void {
     this.editingProductId.set(product.productId);
     this.errorMessage.set(null);
@@ -111,9 +119,11 @@ export class ProductManagementComponent implements OnInit {
       stockQuantity: product.stockQuantity,
       isAvailable: product.isAvailable,
     });
+    this.isModalOpen.set(true);
   }
 
   cancelEdit(): void {
+    this.isModalOpen.set(false);
     this.editingProductId.set(null);
     this.form.reset({
       name: '',
@@ -157,6 +167,24 @@ export class ProductManagementComponent implements OnInit {
     this.successMessage.set(null);
 
     const editId = this.editingProductId();
+    if (editId === null && !payload.imageUrl) {
+      const selectedCategory = this.categories().find((c) => c.categoryId === payload.categoryId);
+      if (selectedCategory) {
+        const catMap: Record<string, string> = {
+          'bakery & breads': '/images/category/Bakery & Breads.jpg',
+          'beverages': '/images/category/Beverages.jpg',
+          'desserts': '/images/category/Desserts.jpg',
+          'healthy bowls': '/images/category/Healthy Bowls.jpg',
+          'pizzas': '/images/category/Pizzas.jpg',
+          'snacks & sides': '/images/category/Snacks & Sides.jpg',
+        };
+        const defImg = catMap[selectedCategory.name.trim().toLowerCase()];
+        if (defImg) {
+          payload.imageUrl = defImg;
+        }
+      }
+    }
+
     if (editId !== null) {
       this.productsService.updateProduct(editId, payload).subscribe({
         next: (updated) => {

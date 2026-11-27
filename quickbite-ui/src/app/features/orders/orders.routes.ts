@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { authGuard, roleGuard } from '../../core/guards/auth.guard';
+import { authGuard, profileCompleteGuard, roleGuard } from '../../core/guards/auth.guard';
 
 export const orderRoutes: Routes = [
   {
     path: 'orders/my',
-    canActivate: [authGuard],
+    canActivate: [authGuard, profileCompleteGuard],
     loadComponent: () =>
       import('./my-orders/my-orders').then((m) => m.MyOrdersComponent),
   },
@@ -18,7 +18,7 @@ export const orderRoutes: Routes = [
   },
   {
     path: 'orders/:id',
-    canActivate: [authGuard],
+    canActivate: [authGuard, profileCompleteGuard],
     loadComponent: () =>
       import('./order-details/order-details').then(
         (m) => m.OrderDetailsComponent

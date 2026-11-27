@@ -19,6 +19,7 @@ export class CategoriesComponent implements OnInit {
   readonly searchTerm = signal('');
   readonly isLoading = signal(false);
   readonly isSubmitting = signal(false);
+  readonly isModalOpen = signal(false);
   readonly editingCategoryId = signal<number | null>(null);
   readonly errorMessage = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
@@ -66,6 +67,13 @@ export class CategoriesComponent implements OnInit {
     this.searchTerm.set(input.value);
   }
 
+  openCreateModal(): void {
+    this.cancelEdit();
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+    this.isModalOpen.set(true);
+  }
+
   startEdit(category: Category): void {
     this.editingCategoryId.set(category.categoryId);
     this.errorMessage.set(null);
@@ -74,9 +82,11 @@ export class CategoriesComponent implements OnInit {
       name: category.name,
       description: category.description ?? '',
     });
+    this.isModalOpen.set(true);
   }
 
   cancelEdit(): void {
+    this.isModalOpen.set(false);
     this.editingCategoryId.set(null);
     this.form.reset({ name: '', description: '' });
   }
@@ -127,7 +137,7 @@ export class CategoriesComponent implements OnInit {
             [...list, created].sort((a, b) => a.name.localeCompare(b.name))
           );
           this.successMessage.set(`Category "${created.name}" created.`);
-          this.form.reset({ name: '', description: '' });
+          this.cancelEdit();
           this.isSubmitting.set(false);
         },
         error: (err: HttpErrorResponse) => {

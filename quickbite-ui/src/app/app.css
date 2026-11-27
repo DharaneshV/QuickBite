@@ -1,5 +1,6 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
@@ -65,5 +66,7 @@
 }
 
 .page-content {
-  display: block;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }

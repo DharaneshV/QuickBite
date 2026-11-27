@@ -52,8 +52,8 @@
       @for (product of products(); track product.productId) {
         <article class="product-card">
           <div class="product-media">
-            @if (product.imageUrl) {
-              <img [src]="product.imageUrl" [alt]="product.name" />
+            @if (getProductImageUrl(product.imageUrl, product.categoryName); as img) {
+              <img [src]="img" [alt]="product.name" />
             } @else {
               <div class="image-placeholder">No Image</div>
             }

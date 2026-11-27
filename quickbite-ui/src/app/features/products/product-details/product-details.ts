@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CartService } from '../../cart/cart.service';
 import { Product } from '../products.models';
 import { ProductsService } from '../products.service';
+import { getProductImageUrl } from '../product-image.util';
 
 @Component({
   selector: 'app-product-details',
@@ -22,6 +23,8 @@ export class ProductDetailsComponent implements OnInit {
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
   readonly cartMessage = signal<string | null>(null);
+
+  readonly getProductImageUrl = getProductImageUrl;
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');

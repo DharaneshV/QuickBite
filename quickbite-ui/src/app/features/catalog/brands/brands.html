@@ -12,6 +12,9 @@
         (input)="onSearch($event)"
         aria-label="Search brands"
       />
+      <button type="button" class="btn btn-primary" (click)="openCreateModal()">
+        + Add Brand
+      </button>
     </div>
   </header>
 
@@ -23,96 +26,98 @@
     <div class="alert alert-success" role="status">{{ successMessage() }}</div>
   }
 
-  <div class="catalog-grid">
-    <div class="card form-card">
-      <h2>{{ editingBrandId() !== null ? 'Edit Brand' : 'Add Brand' }}</h2>
+  <div class="card list-card">
+    <div class="list-header">
+      <h2>All Brands ({{ filteredBrands().length }})</h2>
+    </div>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-        <div class="form-field">
-          <label for="brand-name">Name <span class="required">*</span></label>
-          <input
-            id="brand-name"
-            type="text"
-            formControlName="name"
-            placeholder="e.g. FreshCo"
-          />
-          @if (form.controls.name.touched && form.controls.name.errors?.['required']) {
-            <span class="field-error">Brand name is required.</span>
-          }
-          @if (form.controls.name.touched && form.controls.name.errors?.['maxlength']) {
-            <span class="field-error">Name cannot exceed 100 characters.</span>
-          }
+    @if (isLoading()) {
+      <p class="empty-state">Loading brands...</p>
+    } @else if (filteredBrands().length === 0) {
+      <p class="empty-state">No brands found.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Products</th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (brand of filteredBrands(); track brand.brandId) {
+              <tr>
+                <td class="name-cell">{{ brand.name }}</td>
+                <td>
+                  <span class="badge">{{ brand.productCount }}</span>
+                </td>
+                <td class="actions-col">
+                  <button
+                    type="button"
+                    class="btn-link"
+                    (click)="startEdit(brand)"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-link danger"
+                    (click)="deleteBrand(brand)"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  @if (isModalOpen()) {
+    <div class="modal-backdrop" (click)="cancelEdit()">
+      <div class="card modal-card" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ editingBrandId() !== null ? 'Edit Brand' : 'Add Brand' }}</h2>
+          <button type="button" class="modal-close" aria-label="Close" (click)="cancelEdit()">×</button>
         </div>
 
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
-            {{
-              isSubmitting()
-                ? 'Saving...'
-                : editingBrandId() !== null
-                  ? 'Update Brand'
-                  : 'Create Brand'
-            }}
-          </button>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+          <div class="form-field">
+            <label for="brand-name">Name <span class="required">*</span></label>
+            <input
+              id="brand-name"
+              type="text"
+              formControlName="name"
+              placeholder="e.g. FreshCo"
+            />
+            @if (form.controls.name.touched && form.controls.name.errors?.['required']) {
+              <span class="field-error">Brand name is required.</span>
+            }
+            @if (form.controls.name.touched && form.controls.name.errors?.['maxlength']) {
+              <span class="field-error">Name cannot exceed 100 characters.</span>
+            }
+          </div>
 
-          @if (editingBrandId() !== null) {
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+              {{
+                isSubmitting()
+                  ? 'Saving...'
+                  : editingBrandId() !== null
+                    ? 'Update Brand'
+                    : 'Create Brand'
+              }}
+            </button>
+
             <button type="button" class="btn btn-secondary" (click)="cancelEdit()">
               Cancel
             </button>
-          }
-        </div>
-      </form>
-    </div>
-
-    <div class="card list-card">
-      <div class="list-header">
-        <h2>All Brands ({{ filteredBrands().length }})</h2>
+          </div>
+        </form>
       </div>
-
-      @if (isLoading()) {
-        <p class="empty-state">Loading brands...</p>
-      } @else if (filteredBrands().length === 0) {
-        <p class="empty-state">No brands found.</p>
-      } @else {
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Products</th>
-                <th class="actions-col">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (brand of filteredBrands(); track brand.brandId) {
-                <tr>
-                  <td class="name-cell">{{ brand.name }}</td>
-                  <td>
-                    <span class="badge">{{ brand.productCount }}</span>
-                  </td>
-                  <td class="actions-col">
-                    <button
-                      type="button"
-                      class="btn-link"
-                      (click)="startEdit(brand)"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      class="btn-link danger"
-                      (click)="deleteBrand(brand)"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      }
     </div>
-  </div>
+  }
 </section>
-

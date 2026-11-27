@@ -66,7 +66,7 @@ export class RegisterComponent {
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
         next: () => {
-          void this.router.navigateByUrl('/');
+          void this.router.navigate(['/profile']);
         },
         error: (err: unknown) => {
           if (err instanceof HttpErrorResponse) {

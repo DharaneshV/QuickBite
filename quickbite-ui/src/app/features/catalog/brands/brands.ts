@@ -19,6 +19,7 @@ export class BrandsComponent implements OnInit {
   readonly searchTerm = signal('');
   readonly isLoading = signal(false);
   readonly isSubmitting = signal(false);
+  readonly isModalOpen = signal(false);
   readonly editingBrandId = signal<number | null>(null);
   readonly errorMessage = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
@@ -61,14 +62,23 @@ export class BrandsComponent implements OnInit {
     this.searchTerm.set(input.value);
   }
 
+  openCreateModal(): void {
+    this.cancelEdit();
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+    this.isModalOpen.set(true);
+  }
+
   startEdit(brand: Brand): void {
     this.editingBrandId.set(brand.brandId);
     this.errorMessage.set(null);
     this.successMessage.set(null);
     this.form.setValue({ name: brand.name });
+    this.isModalOpen.set(true);
   }
 
   cancelEdit(): void {
+    this.isModalOpen.set(false);
     this.editingBrandId.set(null);
     this.form.reset({ name: '' });
   }
@@ -114,7 +124,7 @@ export class BrandsComponent implements OnInit {
             [...list, created].sort((a, b) => a.name.localeCompare(b.name))
           );
           this.successMessage.set(`Brand "${created.name}" created.`);
-          this.form.reset({ name: '' });
+          this.cancelEdit();
           this.isSubmitting.set(false);
         },
         error: (err: HttpErrorResponse) => {

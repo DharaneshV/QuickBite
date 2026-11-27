@@ -8,8 +8,8 @@
   } @else if (product(); as item) {
     <div class="details-card">
       <div class="media-box">
-        @if (item.imageUrl) {
-          <img [src]="item.imageUrl" [alt]="item.name" />
+        @if (getProductImageUrl(item.imageUrl, item.categoryName); as img) {
+          <img [src]="img" [alt]="item.name" />
         } @else {
           <div class="image-placeholder">No Image Available</div>
         }

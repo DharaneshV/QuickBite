@@ -1,17 +1,18 @@
 <header class="topbar">
-  <a routerLink="/" class="brand">{{ title() }}</a>
+  <a [routerLink]="authService.isAdmin() ? '/admin' : '/'" class="brand">{{ title() }}</a>
 
   <nav class="nav-links">
-    <a routerLink="/products" routerLinkActive="active">Products</a>
-    <a routerLink="/cart" routerLinkActive="active">Cart ({{ cartService.itemCount() }})</a>
-    @if (authService.isAuthenticated()) {
+    @if (authService.isAuthenticated() && !authService.isAdmin()) {
+      <a routerLink="/products" routerLinkActive="active">Products</a>
+      <a routerLink="/cart" routerLinkActive="active">Cart ({{ cartService.itemCount() }})</a>
       <a routerLink="/orders/my" routerLinkActive="active">My Orders</a>
+      <a routerLink="/profile" routerLinkActive="active">Profile</a>
     }
     @if (authService.isAdmin()) {
-      <a routerLink="/admin" routerLinkActive="active">Admin</a>
-      <a routerLink="/products/manage" routerLinkActive="active">Manage Products</a>
-      <a routerLink="/categories" routerLinkActive="active">Categories</a>
-      <a routerLink="/brands" routerLinkActive="active">Brands</a>
+      <a routerLink="/admin/products" routerLinkActive="active">Manage Products</a>
+      <a routerLink="/admin/categories" routerLinkActive="active">Categories</a>
+      <a routerLink="/admin/brands" routerLinkActive="active">Brands</a>
+      <a routerLink="/admin/orders" routerLinkActive="active">Orders</a>
     }
     @if (authService.isAuthenticated()) {
       <span class="user-pill">

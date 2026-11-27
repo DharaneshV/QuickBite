@@ -1,0 +1,111 @@
+<section class="profile-page">
+  <div class="profile-card">
+    <header class="profile-header">
+      <span class="badge">Customer Profile</span>
+      <h1>{{ isOnboarding() ? 'Complete your profile' : 'Your Profile' }}</h1>
+      <p>
+        @if (isOnboarding()) {
+          Please provide your contact number and delivery details to continue to QuickBite.
+        } @else {
+          Update your contact number and default delivery address.
+        }
+      </p>
+    </header>
+
+    @if (savedMessage()) {
+      <div class="alert-success" role="status">{{ savedMessage() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="profile-form">
+      <div class="two-col">
+        <div class="field-group">
+          <label for="profile-name">Full Name <span class="req">*</span></label>
+          <input
+            id="profile-name"
+            type="text"
+            formControlName="fullName"
+            placeholder="Your full name"
+            [class.invalid]="form.controls.fullName.invalid && form.controls.fullName.touched"
+          />
+          @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
+            <span class="field-error">Enter your full name (at least 2 characters).</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label for="profile-phone">Phone Number <span class="req">*</span></label>
+          <input
+            id="profile-phone"
+            type="tel"
+            formControlName="phoneNumber"
+            placeholder="+91 98765 43210"
+            [class.invalid]="form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched"
+          />
+          @if (form.controls.phoneNumber.touched && form.controls.phoneNumber.hasError('required')) {
+            <span class="field-error">Phone number is required.</span>
+          } @else if (form.controls.phoneNumber.touched && form.controls.phoneNumber.hasError('pattern')) {
+            <span class="field-error">Enter a valid phone number (8-16 digits).</span>
+          }
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="profile-address">Delivery Address <span class="req">*</span></label>
+        <input
+          id="profile-address"
+          type="text"
+          formControlName="addressLine"
+          placeholder="House / Flat no., Street, Landmark"
+          [class.invalid]="form.controls.addressLine.invalid && form.controls.addressLine.touched"
+        />
+        @if (form.controls.addressLine.touched && form.controls.addressLine.invalid) {
+          <span class="field-error">Delivery address is required.</span>
+        }
+      </div>
+
+      <div class="two-col">
+        <div class="field-group">
+          <label for="profile-city">City <span class="req">*</span></label>
+          <input
+            id="profile-city"
+            type="text"
+            formControlName="city"
+            placeholder="e.g. Chennai"
+            [class.invalid]="form.controls.city.invalid && form.controls.city.touched"
+          />
+          @if (form.controls.city.touched && form.controls.city.invalid) {
+            <span class="field-error">City is required.</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label for="profile-postal">Postal Code <span class="req">*</span></label>
+          <input
+            id="profile-postal"
+            type="text"
+            formControlName="postalCode"
+            placeholder="e.g. 600001"
+            [class.invalid]="form.controls.postalCode.invalid && form.controls.postalCode.touched"
+          />
+          @if (form.controls.postalCode.touched && form.controls.postalCode.invalid) {
+            <span class="field-error">Postal code is required.</span>
+          }
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="profile-notes">Delivery Notes (Optional)</label>
+        <textarea
+          id="profile-notes"
+          rows="2"
+          formControlName="deliveryNotes"
+          placeholder="Gate code, drop-off instructions..."
+        ></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        {{ isOnboarding() ? 'Save & Continue to Store' : 'Save Profile' }}
+      </button>
+    </form>
+  </div>
+</section>

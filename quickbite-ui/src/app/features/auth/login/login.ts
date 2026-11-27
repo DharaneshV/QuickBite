@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../auth.service';
+import { ProfileService } from '../profile.service';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,7 @@ import { AuthService } from '../auth.service';
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -44,13 +46,24 @@ export class LoginComponent {
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
         next: (response) => {
+          if (response.role.toLowerCase() === 'admin') {
+            void this.router.navigateByUrl('/admin');
+            return;
+          }
+
           const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
           const safeReturnUrl =
             returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')
               ? returnUrl
-              : response.role.toLowerCase() === 'admin'
-                ? '/admin'
-                : '/';
+              : '/products';
+
+          if (!this.profileService.isProfileComplete(response.userId)) {
+            void this.router.navigate(['/profile'], {
+              queryParams: { returnUrl: safeReturnUrl },
+            });
+            return;
+          }
+
           void this.router.navigateByUrl(safeReturnUrl);
         },
         error: (err: unknown) => {
