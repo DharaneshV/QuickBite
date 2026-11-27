@@ -1,0 +1,79 @@
+<section class="checkout-page">
+  @if (orderConfirmation(); as confirmation) {
+    <div class="confirmation-card">
+      <span class="status-badge">{{ confirmation.status }}</span>
+      <h1>Order Confirmed!</h1>
+      <p class="subtitle">
+        Order <strong>#{{ confirmation.orderId }}</strong> placed on
+        {{ confirmation.orderDate | date: 'medium' }}
+      </p>
+
+      <div class="receipt-list">
+        @for (item of confirmation.items; track item.productId) {
+          <div class="receipt-row">
+            <span>{{ item.productName }} × {{ item.quantity }}</span>
+            <span>{{ item.lineTotal | currency }}</span>
+          </div>
+        }
+        <div class="receipt-row total">
+          <span>Total Paid</span>
+          <span>{{ confirmation.totalAmount | currency }}</span>
+        </div>
+      </div>
+
+      <div class="confirmation-actions">
+        <a routerLink="/products" class="primary-btn">Continue Shopping</a>
+        <a routerLink="/cart" class="secondary-link">View Cart</a>
+      </div>
+    </div>
+  } @else {
+    <header class="checkout-header">
+      <div>
+        <h1>Checkout</h1>
+        <p>Final prices and stock availability are verified on the server when you place your order.</p>
+      </div>
+      <a routerLink="/cart" class="secondary-link">Back to Cart</a>
+    </header>
+
+    @if (errorMessage()) {
+      <div class="alert-error" role="alert">{{ errorMessage() }}</div>
+    }
+
+    @if (cartService.isEmpty()) {
+      <div class="empty-card">
+        <h2>Nothing to check out</h2>
+        <p>Your cart is currently empty.</p>
+        <a routerLink="/products" class="primary-btn">Browse Products</a>
+      </div>
+    } @else {
+      <div class="review-card">
+        <h2>Order Review</h2>
+        <div class="review-items">
+          @for (item of cartService.items(); track item.productId) {
+            <div class="review-row">
+              <div>
+                <strong>{{ item.name }}</strong>
+                <span class="muted"> — {{ item.price | currency }} × {{ item.quantity }}</span>
+              </div>
+              <strong>{{ item.price * item.quantity | currency }}</strong>
+            </div>
+          }
+        </div>
+
+        <div class="review-total">
+          <span>Total ({{ cartService.itemCount() }} items)</span>
+          <span>{{ cartService.subtotal() | currency }}</span>
+        </div>
+
+        <button
+          type="button"
+          class="primary-btn full-width"
+          [disabled]="isSubmitting()"
+          (click)="placeOrder()"
+        >
+          {{ isSubmitting() ? 'Placing Order...' : 'Place Order' }}
+        </button>
+      </div>
+    }
+  }
+</section>
